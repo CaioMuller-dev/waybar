@@ -114,6 +114,6 @@
   "custom/power": {
     "format": "",
     "tooltip": false,
-    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/rofi/powermenu/type-2/powermenu.sh\""
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/power_menu.sh\""
   }
 }

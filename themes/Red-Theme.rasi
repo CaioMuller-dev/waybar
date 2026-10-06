@@ -1,0 +1,97 @@
+/* =======================================================
+   SUAS VARIÁVEIS (CORES E FONTES)
+   ======================================================= */
+* {
+    font:                "Hack Nerd Font Propo 11";
+    
+    /* Mude as cores aqui (código HEX) */
+    bg-fundo:            #0c0000d9;  /* Fundo da janela */
+    bg-caixa-texto:      #370000;  /* Fundo do campo de digitação */
+    bg-selecionado:      #340000;  /* Cor do item selecionado */
+    
+    fg-texto:            #ffffff;  /* Cor do texto normal */
+    fg-selecionado:      #a18c8c;  /* Cor do texto do item selecionado */
+    
+    cor-borda:           #000000;  /* Cor da borda principal */
+    
+    background-color:    transparent;
+    text-color:          @fg-texto;
+    margin:              0;
+    padding:             0;
+}
+
+/* =======================================================
+   ESTRUTURA DA JANELA
+   ======================================================= */
+window {
+    location:            center;
+    anchor:              center;
+    width:               600px;
+    border:              2px;
+    border-color:        @cor-borda;
+    border-radius:       12px;     /* Bordas arredondadas da janela */
+    background-color:    @bg-fundo;
+    padding:             16px;
+}
+
+/* Caixa principal */
+mainbox {
+    spacing:             12px;
+    children:            [ inputbar, listview ];
+}
+
+/* =======================================================
+   BARRA DE PESQUISA (ONDE VOCÊ DIGITA)
+   ======================================================= */
+inputbar {
+    background-color:    @bg-caixa-texto;
+    border-radius:       8px;
+    padding:             8px 12px;
+    children:            [ prompt, entry ];
+}
+
+prompt {
+    text-color:          @cor-borda;
+    margin:              0px 8px 0px 0px;
+}
+
+entry {
+    placeholder:         "Digite para buscar...";
+    placeholder-color:   #64748b;
+}
+
+/* =======================================================
+   LISTA DE APLICATIVOS / RESULTADOS
+   ======================================================= */
+listview {
+    lines:               8;        /* Quantidade de itens visíveis */
+    columns:             1;
+    fixed-height:        true;
+    spacing:             4px;
+}
+
+/* Cada item individual da lista */
+element {
+    padding:             8px 12px;
+    border-radius:       6px;
+}
+
+/* Texto dos itens: herda as cores do elemento pai */
+element-text {
+    background-color:    inherit;
+    text-color:          inherit;
+}
+
+/* Ícones dos aplicativos (se você usar) */
+element-icon {
+    background-color:    inherit;
+    text-color:          inherit;
+    size:                24px;
+    margin:              0px 8px 0px 0px;
+}
+
+/* Quando o item está selecionado pelo teclado/mouse */
+element selected normal, element selected active, element selected urgent {
+    background-color:    @bg-selecionado;
+    text-color:          @fg-selecionado;
+}
