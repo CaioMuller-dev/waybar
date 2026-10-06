@@ -1,0 +1,105 @@
+* {
+    font-family: "FiraCode Nerd Font", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 10px;
+    color: #ffffff;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+}
+
+/* Espaçamento uniforme entre módulos */
+#tray,
+#mpd,
+#custom-weather,
+#cpu,
+#temperature,
+#memory,
+#bluetooth,
+#custom-uptime,
+#custom-music,
+#custom-spotify,
+#sway-mode,
+#backlight,
+#pulseaudio,
+#custom-vpn,
+#disk,
+#custom-recorder,
+#custom-audiorec,
+#battery,
+#clock,
+#idle_inhibitor,
+#custom-wallpaper,
+#custom-network,
+#custom-performance {
+    padding: 0 10px;
+    margin: 2px 3px;
+    background: rgba(2, 4, 12, 0.97);
+    border: 1px solid rgba(255, 180, 170, 0.12);
+    border-radius: 9px;
+}
+
+#workspaces {
+    margin: 2px 3px;
+    padding: 0;
+    background: transparent;
+}
+
+#workspaces button {
+    padding: 0 10px;
+    margin: 0 3px;
+    color: #ffffff;
+    border-radius: 9px;
+    background: rgba(2, 4, 12, 0.97);
+    border: 1px solid rgba(255, 180, 170, 0.12);
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+    color: #ffffff;
+    background: #660014;
+}
+
+#battery.warning { color: #e0a368; }
+#battery.critical { color: #ff6b6b; }
+#battery.charging { color: #add8e6; }
+
+#clock { color: #ffffff; }
+#custom-wallpaper { color: #ffffff; }
+
+
+#custom-performance.performance { color: #660014; }
+#custom-performance.powersave { color: #add8e6; }
+
+#custom-power { color: #ffffff; padding-right: 12px; font-size: 12px; background: transparent; border: none; padding: 0 6px; }
+#custom-spotify { color: #1DB954; }
+#custom-music { color: #660014; }
+
+
+
+#bluetooth { font-size: 13px; color: #ffffff; }
+
+#bluetooth.connected { color: #add8e6; }
+
+#custom-wallpaper,
+#custom-spotify {
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    padding: 0 6px;
+}
+
+#clock { margin: 0 10px; }
+
+#custom-wallpaper,
+#custom-spotify {
+    margin: 0;
+    padding: 0 8px;
+}
+
+#custom-wallpaper {
+	margin-right: 7px;
+}

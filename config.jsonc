@@ -1,0 +1,119 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 25,
+  "margin-top": 3,
+  "margin-bottom": 0,
+  "margin-left": 8,
+  "margin-right": 8,
+
+  "modules-left": ["hyprland/workspaces", "custom/uptime", "memory", "cpu"],
+  "modules-center": ["custom/wallpaper", "clock", "custom/spotify"],
+  "modules-right": ["custom/music", "bluetooth", "custom/network", "pulseaudio", "backlight", "battery", "custom/performance", "custom/power"],
+
+  "hyprland/workspaces": {
+    "sort-by-name": true,
+    "format": "{name}:{icon}",
+    "format-icons": {
+      "default": "<span rise='1024'>\uf111</span>",
+      "active": "<span rise='1024'>\uf192</span>"
+    },
+    "on-click": "activate"
+  },
+  "custom/uptime": {
+    "format": "<span rise='1024'>\uf062</span> {}",
+    "exec": "uptime -p | sed -E 's/^up //; s/ hours?/h/; s/ minutes?/m/; s/ days?/d/; s/ years?/y/; s/,//g; s/ /,/g'",
+    "interval": 60,
+    "tooltip": false
+  },
+  "memory": {
+    "interval": 30,
+    "format": "<span rise='1024'>\uefc5</span> {used:0.1f}G",
+    "tooltip": false,
+    "warning": 70,
+    "critical": 90
+  },
+  "cpu": {
+    "format": "<span rise='1024'>\uf2db</span> {}%",
+    "tooltip": false,
+    "on-click": "kitty -e htop"
+  },
+
+  "clock": {
+    "format": "{:%H:%M - %A, %d}",
+    "format-alt": "{:%d/%m/%Y}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>"
+  },
+  "custom/wallpaper": {
+    "format": "\uf03e",
+    "tooltip": false,
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/wallpaper_select.sh\""
+  },
+  "custom/spotify": {
+    "format": "\uf1bc",
+    "tooltip": false,
+    "on-click": "spotify &"
+  },
+
+  "custom/music": {
+    "format": "{}",
+    "exec": "playerctl metadata --format '{{artist}} — {{title}}' 2>/dev/null || echo 'Nada tocando'",
+    "interval": 2,
+    "max-length": 34,
+    "tooltip": false,
+    "on-click": "playerctl play-pause"
+  },
+  "bluetooth": {
+    "format": "\uf294",
+    "format-connected": "\uf294 {num_connections}",
+    "format-off": "\uf294",
+    "format-disabled": "\uf071",
+    "tooltip-format-connected": "{device_alias}",
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/bluetooth_toggle.sh\"",
+    "on-click-right": "blueman-manager"
+  },
+  "custom/network": {
+    "exec": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/network_icon.sh\"",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "kitty -e nmtui"
+  },
+  "pulseaudio": {
+    "format": "<span rise='1024'>{icon}</span>  {volume}%",
+    "format-muted": "\uf026",
+    "format-icons": {
+      "headphone": "\uf025",
+      "hands-free": "\uf590",
+      "headset": "🎧",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol"
+  },
+  "backlight": {
+    "format": "<span rise='1024'>{icon}</span>  {percent}%",
+    "format-icons": ["\uf185", "\uf185"],
+    "on-scroll-down": "brightnessctl -c backlight set 5%-",
+    "on-scroll-up": "brightnessctl -c backlight set +5%"
+  },
+  "battery": {
+    "states": { "warning": 30, "critical": 15 },
+    "format": "<span rise='1024'>{icon}</span>  {capacity}%",
+    "format-charging": "<span rise='1024'><span color='#add8e6'></span></span>  {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "interval": 5
+  },
+  "custom/performance": {
+    "exec": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/performance_mode.sh\"",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/performance_mode.sh\" toggle"
+  },
+  "custom/power": {
+    "format": "",
+    "tooltip": false,
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/rofi/powermenu/type-2/powermenu.sh\""
+  }
+}
