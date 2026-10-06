@@ -1,4 +1,4 @@
-# Waybar MecSystem
+# Waybar Kalice
 
 Configuração personalizada da Waybar para sessões Wayland com Hyprland. O projeto reúne a configuração JSONC, o tema CSS e scripts para rede, Bluetooth, wallpapers, desempenho e menu de energia.
 
