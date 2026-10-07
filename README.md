@@ -1,187 +1,139 @@
 # Waybar Kalice
 
-Configuração personalizada da Waybar para sessões Wayland com Hyprland. O projeto reúne a configuração JSONC, o tema CSS e scripts para rede, Bluetooth, wallpapers, desempenho e menu de energia.
+Configuração de Waybar para Hyprland no Arch Linux. O repositório inclui a configuração JSONC, o CSS, o tema do Rofi, scripts auxiliares e a configuração do Hyprlock usada pelo menu de energia.
 
-## Índice
+## O que a configuração usa
 
-- [Descrição](#descrição)
-- [Módulos e funcionalidades](#módulos-e-funcionalidades)
-- [Dependências](#dependências)
-- [Instalação no Arch Linux](#instalação-no-arch-linux)
-- [Instalação dos arquivos](#instalação-dos-arquivos)
-- [Inicialização e uso](#inicialização-e-uso)
-- [Permissões e observações](#permissões-e-observações)
-- [Solução de problemas](#solução-de-problemas)
+- **Esquerda:** workspaces do Hyprland, uptime, memória e CPU. Clicar em memória ou CPU abre `htop` no Kitty.
+- **Centro:** seletor de wallpaper, relógio e atalho para Spotify.
+- **Direita:** controles de música, Bluetooth, rede, áudio, brilho, bateria, governor da CPU e energia.
+- **Scripts:** `wallpaper_select.sh`, `bluetooth_toggle.sh`, `network_icon.sh`, `performance_mode.sh`, `set_governor.sh` e `power_menu.sh`.
 
-## Descrição
-
-Esta configuração organiza a barra em três áreas: espaços de trabalho, uso do sistema, relógio, música, rede, Bluetooth, áudio, brilho, bateria, modo de desempenho e menu de energia. A aparência é definida em `style.css`; os comandos dos módulos personalizados estão em `scripts/`.
-
-Waybar é uma barra para Wayland. Esta configuração usa o módulo `hyprland/workspaces` e, portanto, foi preparada para ser executada dentro do Hyprland.
-
-## Módulos e funcionalidades
-
-| Área | Módulos | O que mostram ou fazem |
-| :--- | :--- | :--- |
-| Esquerda | Workspaces do Hyprland, uptime, memória e CPU | Espaços de trabalho e informações básicas do sistema. Clique na CPU abre o `htop` no Kitty. |
-| Centro | Wallpaper, relógio e Spotify | Abre o seletor de wallpapers, alterna o formato do relógio e inicia o Spotify. |
-| Direita | Música, Bluetooth, rede, áudio, brilho, bateria, desempenho e energia | Exibe estados do sistema e abre controles e menus ao clicar. |
+Os wallpapers são arquivos pessoais e não fazem parte deste repositório. O seletor procura imagens em `~/Pictures/Wallpapers`, `~/Imagens/Wallpapers` ou na pasta `Wallpapers` dentro do diretório de imagens configurado no sistema. A configuração ativa do Hyprpaper é criada em `~/.config/hypr/hyprpaper.conf`; miniaturas e a imagem de bloqueio ficam no cache do usuário.
 
 ## Dependências
 
-### Essenciais para esta configuração
+### Necessárias para a sessão e os módulos
 
-- **Waybar**: barra e módulos nativos.
-- **Hyprland**: compositor Wayland usado pelo módulo de workspaces.
-- **FiraCode Nerd Font**: fonte definida no CSS e necessária para os ícones.
-- **Bash e utilitários GNU**: execução dos scripts e comandos como `sed`, `awk`, `uptime`, `cat` e `mkdir`.
-- **playerctl**: metadados e controles de reprodução.
-- **NetworkManager**: `nmcli` para detectar a rede; `nmtui` para abrir a interface de rede no terminal.
-- **BlueZ**: `bluetoothctl` para controlar o Bluetooth.
-- **Servidor de áudio compatível com PulseAudio**: necessário para o módulo `pulseaudio`. Em instalações PipeWire, use `pipewire-pulse` e `wireplumber`.
-- **libnotify**: comando `notify-send`, usado pelos avisos dos scripts.
+- Waybar e Hyprland (o módulo de workspaces é `hyprland/workspaces`).
+- `ttf-firacode-nerd` para os ícones da Waybar e a fonte da tela de bloqueio.
+- `playerctl` para o módulo de música.
+- NetworkManager e `bluez`/`bluez-utils` para rede e Bluetooth (`nmcli`, `nmtui` e `bluetoothctl`).
+- `pipewire`, `pipewire-pulse` e `wireplumber` para áudio em uma instalação PipeWire.
+- `brightnessctl` para controle de brilho; `libnotify` para avisos dos scripts.
+- `rofi` para os menus de wallpaper e energia.
+- `ffmpeg` para gerar miniaturas, `hyprpaper` para aplicar wallpapers e `hyprctl` (fornecido pelo Hyprland) para falar com os serviços Hyprland/Hyprpaper.
+- `kitty` e `htop` para as ações de clique em memória/CPU e rede.
+- `pavucontrol` para abrir o mixer gráfico e `blueman` para abrir o gerenciador Bluetooth.
 
-O próprio pacote Waybar instala suas bibliotecas necessárias pelo pacman. Não é preciso instalar manualmente as bibliotecas de compilação.
+O tema do Rofi usa **Hack Nerd Font Propo**. Instale essa fonte para que o menu use a tipografia esperada; os ícones e a Waybar usam FiraCode Nerd Font. No Arch Linux, o pacote `ttf-hack-nerd` fornece Hack Nerd Font.
 
-### Usadas por ações específicas
+### Opcionais
 
-| Pacote/comando | Uso |
-| :--- | :--- |
-| `rofi` | Seletor de wallpapers e menu de energia. O seletor usa `themes/Red-Theme.rasi`, incluído neste repositório. |
-| `ffmpeg` | Cria miniaturas de wallpapers. |
-| `hyprpaper` | Aplica o wallpaper selecionado. |
-| `hyprlock` | Bloqueia a sessão pelo menu de energia. |
-| `brightnessctl` | Ajusta o brilho ao rolar sobre o módulo. |
-| `pavucontrol` | Abre o controle gráfico de áudio. |
-| `blueman` | Abre o gerenciador Bluetooth com clique direito. |
-| `kitty` e `htop` | Terminal e monitor de processos abertos pelos cliques da barra. |
-| `systemd` | Comando `systemctl` para desligar, reiniciar ou suspender. |
-| `sudo` e suporte a `cpufreq` | Script de desempenho altera o governor da CPU. Pode não funcionar em todo hardware/kernel. |
-| `spotify-launcher` | Inicia o Spotify pelo ícone central. É opcional e pode exigir configuração/conta. |
-| `mpc` e `alsa-utils` | O menu tenta pausar o MPD e silenciar o mixer ao suspender. São opcionais. |
+- `spotify-launcher` para iniciar Spotify pelo ícone central.
+- `mpc` e `alsa-utils` para pausar MPD e silenciar o mixer ao suspender.
+- Suporte a `cpufreq` no kernel/hardware e autorização via `sudo` para alternar o governor. Sem esse suporte, o módulo de desempenho não funciona.
 
-### Instalação dos pacotes no Arch Linux
+## Instalação no Arch Linux
 
-Atualize o sistema e instale a base e os utilitários usados pela configuração:
+Instale os pacotes usados pelos módulos. Se já usa outro compositor ou servidor de áudio, não instale/substitua Hyprland ou PipeWire sem considerar sua instalação atual.
 
 ```bash
 sudo pacman -Syu
-sudo pacman -S waybar hyprland hyprlock ttf-firacode-nerd playerctl networkmanager bluez bluez-utils rofi ffmpeg hyprpaper libnotify brightnessctl pavucontrol blueman kitty htop pipewire pipewire-pulse wireplumber
+sudo pacman -S waybar hyprland hyprlock hyprpaper ttf-firacode-nerd ttf-hack-nerd playerctl networkmanager bluez bluez-utils pipewire pipewire-pulse wireplumber rofi ffmpeg libnotify brightnessctl pavucontrol blueman kitty htop
 ```
 
-Se já usa outro compositor, não precisa instalar o Hyprland. Se já tem outro servidor de áudio PulseAudio, não instale nem troque o servidor sem antes conferir a configuração atual do sistema.
-
-Instale os complementos opcionais somente se quiser usar essas funções:
-
-```bash
-sudo pacman -S mpc alsa-utils
-```
-
-O Spotify pode ser instalado pelo pacote `spotify-launcher` quando disponível nos repositórios configurados. Caso não esteja disponível, consulte o método de instalação atual do Arch/AUR antes de instalar um pacote de terceiros.
-
-Ative os serviços de rede e Bluetooth, se ainda não estiverem ativos:
+Ative NetworkManager e Bluetooth se ainda não estiverem ativos:
 
 ```bash
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now bluetooth
 ```
 
-Em um computador que já tenha esses serviços configurados, não é necessário habilitá-los novamente.
-
-## Instalação dos arquivos
-
-Faça backup de uma configuração existente e copie os arquivos do repositório para o diretório padrão do usuário:
+Para habilitar funções opcionais:
 
 ```bash
-mkdir -p ~/.config/waybar
-cp -r config.jsonc style.css hyprlock.conf scripts themes ~/.config/waybar/
+sudo pacman -S mpc alsa-utils
 ```
 
-Execute esses comandos a partir da pasta do repositório. Se o clone estiver em outro local, informe os caminhos completos. Os scripts precisam manter a permissão de execução; para garantir isso:
+Instale `spotify-launcher` pelo método disponível para sua instalação do Arch, caso queira usar o atalho. O pacote pode não estar nos repositórios habilitados.
+
+## Baixar e instalar os arquivos
+
+Clone o projeto em uma pasta de trabalho:
+
+```bash
+git clone https://github.com/CaioMuller-dev/waybar.git ~/waybar
+```
+
+Se `~/waybar` já existir, atualize-o com `git -C ~/waybar pull` em vez de cloná-lo novamente. Faça backup da configuração existente antes de copiar. Estes comandos guardam o backup com data e instalam os arquivos nos caminhos que a configuração espera:
+
+```bash
+if [ -d ~/.config/waybar ]; then
+  mv ~/.config/waybar ~/.config/waybar.backup-$(date +%Y%m%d-%H%M%S)
+fi
+mkdir -p ~/.config/waybar
+cp ~/waybar/config.jsonc ~/waybar/style.css ~/waybar/hyprlock.conf ~/.config/waybar/
+cp -a ~/waybar/scripts ~/waybar/themes ~/.config/waybar/
+```
+
+Os bits executáveis dos scripts estão registrados no Git e são preservados por `cp -a`. Se você copiou os scripts por outro método, restaure-os com:
 
 ```bash
 chmod +x ~/.config/waybar/scripts/*.sh
 ```
 
-Para obter o repositório via HTTPS:
+O caminho `~/waybar` é apenas a pasta de clone sugerida; se escolheu outra, ajuste os comandos de cópia. A configuração dos módulos usa `XDG_CONFIG_HOME` quando chama os scripts. O arquivo de Hyprlock usa o caminho padrão `~/.cache/waybar/lockscreen-wallpaper`.
 
-```bash
-git clone https://github.com/CaioMuller-dev/waybar.git
-cd waybar
-```
+## Preparar wallpapers e iniciar
 
-Se você já está dentro do clone, pule os comandos de clone. A configuração referencia os scripts por `XDG_CONFIG_HOME` ou `~/.config`, então mantenha a estrutura `~/.config/waybar/scripts/` e `~/.config/waybar/themes/`.
-
-### Wallpapers
-
-O seletor procura imagens PNG, JPG ou JPEG em `~/Pictures/Wallpapers` ou `~/Imagens/Wallpapers` (também considera o diretório de imagens definido pelo usuário). Crie a pasta e adicione imagens:
+Crie uma das pastas de wallpapers reconhecidas e adicione imagens PNG, JPG ou JPEG:
 
 ```bash
 mkdir -p ~/Pictures/Wallpapers
 ```
 
-O script gera miniaturas em `~/.cache/waybar/wallpaper_thumbs`, grava a seleção em `~/.config/hypr/hyprpaper.conf` e aplica a imagem pelo IPC do Hyprpaper (`hyprctl`). O menu de bloqueio sincroniza essa imagem com o fundo do Hyprlock, usando uma versão desfocada para manter a leitura do relógio e do campo de senha.
+O Hyprland deve iniciar tanto Waybar quanto Hyprpaper. Esta configuração do usuário usa `~/.config/hypr/hyprland.lua`; adicione comandos equivalentes na seção de inicialização da sua configuração, se ainda não existirem:
 
-## Inicialização e uso
-
-Inicie uma sessão Wayland do Hyprland e execute:
-
-```bash
-waybar
+```lua
+hl.exec_cmd("waybar")
+hl.exec_cmd("hyprpaper")
 ```
 
-Para iniciar automaticamente, adicione `exec-once = waybar` à configuração do Hyprland (`~/.config/hypr/hyprland.conf`) ou use a forma equivalente na configuração Lua do Hyprland. Evite iniciar duas instâncias ao mesmo tempo.
-
-Os principais cliques configurados são:
-
-- **CPU:** abre `htop` no Kitty.
-- **Wallpaper:** abre o seletor Rofi e aplica a imagem com Hyprpaper.
-- **Spotify:** inicia o aplicativo.
-- **Música:** alterna play/pause com `playerctl`.
-- **Bluetooth:** alterna o rádio; clique direito abre Blueman.
-- **Rede:** abre `nmtui` no Kitty.
-- **Áudio:** abre `pavucontrol`.
-- **Desempenho:** alterna entre os governors `performance` e `powersave`.
-- **Energia:** abre o menu para bloquear, suspender, sair, reiniciar ou desligar.
-
-## Permissões e observações
-
-- A instalação de pacotes e a ativação de serviços pedem a senha administrativa via `sudo`.
-- O módulo de desempenho chama `sudo` para gravar em `/sys/devices/system/cpu/.../scaling_governor`. A execução por clique pode não ter um terminal para mostrar o pedido de senha. Se isso ocorrer, execute o script manualmente em um terminal para diagnosticar; não configure `sudo` sem senha de forma ampla. O recurso também depende de suporte do kernel e da CPU.
-- Desligar, reiniciar e suspender normalmente são autorizados pelo systemd na sessão local, mas políticas da distribuição podem variar.
-- O controle de brilho precisa que o dispositivo de backlight esteja acessível ao usuário.
-- Bluetooth e rede dependem dos respectivos serviços e adaptadores.
-- O módulo de bateria só mostrará dados em equipamentos com bateria reconhecida pelo sistema.
-- O ícone de Spotify só inicia o aplicativo; o módulo de música lê metadados de players compatíveis via MPRIS e `playerctl`.
-- O menu carrega a configuração `hyprlock.conf` incluída neste repositório. Ela pode ser personalizada; não é necessário criar `~/.config/hypr/hyprlock.conf` para usar o menu.
-- Ícones ausentes geralmente indicam que a fonte Nerd Font não foi instalada ou selecionada corretamente.
-
-## Solução de problemas
-
-Execute Waybar pelo terminal para ver mensagens de erro:
+Para iniciar manualmente a Waybar durante a sessão Hyprland:
 
 ```bash
-waybar
+waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css
 ```
 
-Confira se os principais comandos estão disponíveis:
+O menu de energia inicia o Hyprlock com `~/.config/waybar/hyprlock.conf`. O seletor de wallpaper atualiza `~/.config/hypr/hyprpaper.conf` e envia o wallpaper ao Hyprpaper em execução.
+
+## Ações e limitações
+
+- Clique em wallpaper abre o seletor Rofi; clique em relógio alterna o formato; clique no Spotify tenta executar `spotify`.
+- Clique em música alterna play/pause via MPRIS e `playerctl`.
+- Bluetooth alterna o rádio; clique direito abre Blueman. Rede abre `nmtui` no Kitty.
+- Áudio abre `pavucontrol`; rolar no brilho altera o nível em passos de 5%.
+- Clique no módulo de desempenho alterna entre `performance` e `powersave` usando `sudo`. Dependendo do sistema, o pedido de senha não aparece ao clicar na barra; teste o script num terminal e confira o suporte de governor antes de configurar autorização adicional.
+- O menu de energia oferece bloqueio, suspensão, logout, reinício e desligamento. MPD e `amixer` só são chamados na suspensão e são opcionais.
+- O módulo de bateria só mostra informações quando o sistema detecta uma bateria.
+
+## Diagnóstico
+
+Inicie a Waybar pelo terminal para ver erros de configuração ou comandos ausentes:
 
 ```bash
-command -v waybar playerctl nmcli bluetoothctl rofi ffmpeg hyprpaper
+waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css
 ```
 
-Se um módulo personalizado não aparecer, confira se o script existe e é executável:
+Confira os comandos principais e as permissões dos scripts:
 
 ```bash
+command -v waybar hyprpaper hyprctl rofi ffmpeg nmcli bluetoothctl playerctl
 ls -l ~/.config/waybar/scripts
 ```
 
-Após alterar os arquivos, encerre a instância atual e inicie novamente:
-
-```bash
-pkill waybar
-waybar
-```
+Após alterações, reinicie a Waybar dentro da sessão Hyprland. Evite manter duas instâncias em execução.
 
 ## Referências
 
