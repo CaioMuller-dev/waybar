@@ -31,7 +31,8 @@
     "format": "<span rise='1024'>\uefc5</span> {used:0.1f}G",
     "tooltip": false,
     "warning": 70,
-    "critical": 90
+    "critical": 90,
+    "on-click": "kitty -e htop"
   },
   "cpu": {
     "format": "<span rise='1024'>\uf2db</span> {}%",
