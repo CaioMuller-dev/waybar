@@ -66,24 +66,16 @@ Clone o projeto em uma pasta de trabalho:
 git clone https://github.com/CaioMuller-dev/waybar.git ~/waybar
 ```
 
-Se `~/waybar` já existir, atualize-o com `git -C ~/waybar pull` em vez de cloná-lo novamente. Faça backup da configuração existente antes de copiar. Estes comandos guardam o backup com data e instalam os arquivos nos caminhos que a configuração espera:
+Se `~/waybar` já existir, atualize-o com `git -C ~/waybar pull` em vez de cloná-lo novamente. Rode o instalador a partir do clone:
 
 ```bash
-if [ -d ~/.config/waybar ]; then
-  mv ~/.config/waybar ~/.config/waybar.backup-$(date +%Y%m%d-%H%M%S)
-fi
-mkdir -p ~/.config/waybar
-cp ~/waybar/config.jsonc ~/waybar/style.css ~/waybar/hyprlock.conf ~/.config/waybar/
-cp -a ~/waybar/scripts ~/waybar/themes ~/.config/waybar/
+cd ~/waybar
+./install.sh
 ```
 
-Os bits executáveis dos scripts estão registrados no Git e são preservados por `cp -a`. Se você copiou os scripts por outro método, restaure-os com:
+O instalador copia a configuração, o CSS, o Hyprlock, os scripts e os temas para `~/.config/waybar`, preservando as permissões dos scripts. Se já houver arquivos gerenciados com esses nomes, ele os guarda numa pasta de backup com data antes de instalar. Os demais arquivos nessa pasta ficam no lugar.
 
-```bash
-chmod +x ~/.config/waybar/scripts/*.sh
-```
-
-O caminho `~/waybar` é apenas a pasta de clone sugerida; se escolheu outra, ajuste os comandos de cópia. A configuração dos módulos usa `XDG_CONFIG_HOME` quando chama os scripts. O arquivo de Hyprlock usa o caminho padrão `~/.cache/waybar/lockscreen-wallpaper`.
+Se o clone já está em `~/.config/waybar`, execute `~/.config/waybar/install.sh`; ele reconhece que já está instalado e confere as permissões dos scripts. Se você clonou em outra pasta, entre nela e execute `./install.sh`. O instalador respeita `XDG_CONFIG_HOME` para o destino. Os módulos usam essa variável ao localizar scripts; o arquivo de Hyprlock usa o caminho padrão `~/.cache/waybar/lockscreen-wallpaper`.
 
 ## Preparar wallpapers e iniciar
 
