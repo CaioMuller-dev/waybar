@@ -47,7 +47,7 @@
   "custom/wallpaper": {
     "format": "\uf03e",
     "tooltip": false,
-    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/wallpaper_select.sh\""
+    "on-click": "setsid -f bash -c 'exec \"${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts/wallpaper_select.sh\"'"
   },
   "custom/spotify": {
     "format": "\uf1bc",

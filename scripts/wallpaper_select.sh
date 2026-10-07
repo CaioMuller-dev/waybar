@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 
@@ -18,18 +19,33 @@ elif [ -d "$HOME/Imagens/Wallpapers" ]; then
 fi
 WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/Pictures/Wallpapers}"
 CACHE_DIR="$CACHE_HOME/waybar/wallpaper_thumbs"
+LOCK_WALLPAPER="$CACHE_HOME/waybar/lockscreen-wallpaper"
 HYPRPAPER_CONFIG="$CONFIG_HOME/hypr/hyprpaper.conf"
+ROFI_THEME="$SCRIPT_DIR/../themes/Red-Theme.rasi"
+
+# Accept common image extensions regardless of letter case.
+shopt -s nullglob nocaseglob
+IMAGES=("$WALLPAPER_DIR"/*.{png,jpg,jpeg})
 
 if [ ! -d "$WALLPAPER_DIR" ]; then
     notify-send "Wallpapers" "Crie a pasta ~/Pictures/Wallpapers (ou ~/Imagens/Wallpapers) e adicione imagens."
     exit 1
 fi
 
+if [ "${#IMAGES[@]}" -eq 0 ]; then
+    notify-send "Wallpapers" "Nenhuma imagem PNG, JPG ou JPEG foi encontrada em $WALLPAPER_DIR."
+    exit 1
+fi
+
+if ! command -v rofi >/dev/null 2>&1; then
+    notify-send "Wallpapers" "O Rofi não está instalado."
+    exit 1
+fi
+
 mkdir -p "$CACHE_DIR"
 
 # Gera miniaturas para wallpapers que ainda não têm cache
-for img in "$WALLPAPER_DIR"/*.{png,jpg,jpeg}; do
-    [ -f "$img" ] || continue
+for img in "${IMAGES[@]}"; do
     filename=$(basename "$img")
     thumb="$CACHE_DIR/$filename"
     if [ ! -f "$thumb" ]; then
@@ -38,15 +54,24 @@ for img in "$WALLPAPER_DIR"/*.{png,jpg,jpeg}; do
 done
 
 # Monta a lista formatada para o Rofi com ícones
-SELECTED=$(for img in "$WALLPAPER_DIR"/*.{png,jpg,jpeg}; do
-    [ -f "$img" ] || continue
+SELECTED=$(for img in "${IMAGES[@]}"; do
     filename=$(basename "$img")
-    echo -en "$filename\0icon\x1f$CACHE_DIR/$filename\n"
-done | rofi -dmenu -p "Wallpapers" -show-icons -theme-str 'listview { columns: 3; lines: 2; } element { orientation: vertical; } element-icon { size: 120px; }')
+    printf '%s\0icon\x1f%s\n' "$filename" "$CACHE_DIR/$filename"
+done | rofi -no-config -dmenu -p "Wallpapers" -show-icons \
+    -theme "$ROFI_THEME" \
+    -theme-str 'listview { columns: 3; lines: 2; } element { orientation: vertical; } element-icon { size: 120px; }')
 
-# Aplica a imagem escolhida usando a nova sintaxe do hyprpaper
+# Aplica a imagem escolhida e mantém a seleção para a próxima sessão.
 if [ -n "$SELECTED" ]; then
     FULL_PATH="$WALLPAPER_DIR/$SELECTED"
+
+    if [ ! -f "$FULL_PATH" ]; then
+        notify-send "Wallpapers" "A imagem selecionada não foi encontrada: $FULL_PATH"
+        exit 1
+    fi
+
+    # Keep Hyprlock pointed at the same image selected for Hyprpaper.
+    ln -sfn -- "$FULL_PATH" "$LOCK_WALLPAPER"
     
     # Atualiza o arquivo hyprpaper.conf
     mkdir -p "$(dirname -- "$HYPRPAPER_CONFIG")"
@@ -57,10 +82,12 @@ wallpaper {
     fit_mode = cover
 }
 splash = false
-ipc = on
+ipc = true
 EOF
 
-    # Recarrega o hyprpaper
-    killall hyprpaper
-    hyprpaper &
+    # Update the running Hyprpaper instance through its IPC interface.
+    if ! hyprctl hyprpaper wallpaper ", $FULL_PATH, cover"; then
+        notify-send "Wallpapers" "Não foi possível aplicar a imagem. Confira se o Hyprpaper está rodando e com IPC ativo."
+        exit 1
+    fi
 fi

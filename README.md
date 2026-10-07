@@ -47,9 +47,10 @@ O próprio pacote Waybar instala suas bibliotecas necessárias pelo pacman. Não
 
 | Pacote/comando | Uso |
 | :--- | :--- |
-| `rofi` | Seletor de wallpapers e menu de energia. |
+| `rofi` | Seletor de wallpapers e menu de energia. O seletor usa `themes/Red-Theme.rasi`, incluído neste repositório. |
 | `ffmpeg` | Cria miniaturas de wallpapers. |
 | `hyprpaper` | Aplica o wallpaper selecionado. |
+| `hyprlock` | Bloqueia a sessão pelo menu de energia. |
 | `brightnessctl` | Ajusta o brilho ao rolar sobre o módulo. |
 | `pavucontrol` | Abre o controle gráfico de áudio. |
 | `blueman` | Abre o gerenciador Bluetooth com clique direito. |
@@ -58,7 +59,6 @@ O próprio pacote Waybar instala suas bibliotecas necessárias pelo pacman. Não
 | `sudo` e suporte a `cpufreq` | Script de desempenho altera o governor da CPU. Pode não funcionar em todo hardware/kernel. |
 | `spotify-launcher` | Inicia o Spotify pelo ícone central. É opcional e pode exigir configuração/conta. |
 | `mpc` e `alsa-utils` | O menu tenta pausar o MPD e silenciar o mixer ao suspender. São opcionais. |
-| `betterlockscreen` ou `i3lock` | Opções de bloqueio de tela do menu de energia. São opcionais. |
 
 ### Instalação dos pacotes no Arch Linux
 
@@ -66,7 +66,7 @@ Atualize o sistema e instale a base e os utilitários usados pela configuração
 
 ```bash
 sudo pacman -Syu
-sudo pacman -S waybar hyprland ttf-firacode-nerd playerctl networkmanager bluez bluez-utils rofi ffmpeg hyprpaper libnotify brightnessctl pavucontrol blueman kitty htop pipewire pipewire-pulse wireplumber
+sudo pacman -S waybar hyprland hyprlock ttf-firacode-nerd playerctl networkmanager bluez bluez-utils rofi ffmpeg hyprpaper libnotify brightnessctl pavucontrol blueman kitty htop pipewire pipewire-pulse wireplumber
 ```
 
 Se já usa outro compositor, não precisa instalar o Hyprland. Se já tem outro servidor de áudio PulseAudio, não instale nem troque o servidor sem antes conferir a configuração atual do sistema.
@@ -74,7 +74,7 @@ Se já usa outro compositor, não precisa instalar o Hyprland. Se já tem outro 
 Instale os complementos opcionais somente se quiser usar essas funções:
 
 ```bash
-sudo pacman -S mpc alsa-utils i3lock
+sudo pacman -S mpc alsa-utils
 ```
 
 O Spotify pode ser instalado pelo pacote `spotify-launcher` quando disponível nos repositórios configurados. Caso não esteja disponível, consulte o método de instalação atual do Arch/AUR antes de instalar um pacote de terceiros.
@@ -94,7 +94,7 @@ Faça backup de uma configuração existente e copie os arquivos do repositório
 
 ```bash
 mkdir -p ~/.config/waybar
-cp -r config.jsonc style.css scripts themes ~/.config/waybar/
+cp -r config.jsonc style.css hyprlock.conf scripts themes ~/.config/waybar/
 ```
 
 Execute esses comandos a partir da pasta do repositório. Se o clone estiver em outro local, informe os caminhos completos. Os scripts precisam manter a permissão de execução; para garantir isso:
@@ -120,7 +120,7 @@ O seletor procura imagens PNG, JPG ou JPEG em `~/Pictures/Wallpapers` ou `~/Imag
 mkdir -p ~/Pictures/Wallpapers
 ```
 
-O script gera miniaturas em `~/.cache/waybar/wallpaper_thumbs` e grava a seleção em `~/.config/hypr/hyprpaper.conf`.
+O script gera miniaturas em `~/.cache/waybar/wallpaper_thumbs`, grava a seleção em `~/.config/hypr/hyprpaper.conf` e aplica a imagem pelo IPC do Hyprpaper (`hyprctl`). O menu de bloqueio sincroniza essa imagem com o fundo do Hyprlock, usando uma versão desfocada para manter a leitura do relógio e do campo de senha.
 
 ## Inicialização e uso
 
@@ -153,6 +153,7 @@ Os principais cliques configurados são:
 - Bluetooth e rede dependem dos respectivos serviços e adaptadores.
 - O módulo de bateria só mostrará dados em equipamentos com bateria reconhecida pelo sistema.
 - O ícone de Spotify só inicia o aplicativo; o módulo de música lê metadados de players compatíveis via MPRIS e `playerctl`.
+- O menu carrega a configuração `hyprlock.conf` incluída neste repositório. Ela pode ser personalizada; não é necessário criar `~/.config/hypr/hyprlock.conf` para usar o menu.
 - Ícones ausentes geralmente indicam que a fonte Nerd Font não foi instalada ou selecionada corretamente.
 
 ## Solução de problemas

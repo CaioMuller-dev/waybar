@@ -13,6 +13,8 @@
 # Resolve the bundled theme relative to this script so the Waybar folder is portable.
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 theme="$SCRIPT_DIR/../themes/Red-Theme.rasi"
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 
 # CMDs
 uptime="`uptime -p | sed -e 's/up //g'`"
@@ -97,11 +99,20 @@ case ${chosen} in
     $reboot)
 		run_cmd --reboot
         ;;
-    $lock)
-		if command -v betterlockscreen >/dev/null 2>&1; then
-			betterlockscreen -l
-		elif command -v i3lock >/dev/null 2>&1; then
-			i3lock
+	$lock)
+		if command -v hyprlock >/dev/null 2>&1; then
+			# Resolve Hyprlock's background from the wallpaper currently selected in Hyprpaper.
+			wallpaper="$(sed -n 's/^[[:space:]]*path[[:space:]]*=[[:space:]]*//p' "$CONFIG_HOME/hypr/hyprpaper.conf" 2>/dev/null | head -n 1)"
+			if [[ "$wallpaper" == '~/'* ]]; then
+				wallpaper="$HOME/${wallpaper#~/}"
+			fi
+			if [[ -n "$wallpaper" && -f "$wallpaper" ]]; then
+				mkdir -p "$CACHE_HOME/waybar"
+				ln -sfn -- "$wallpaper" "$CACHE_HOME/waybar/lockscreen-wallpaper"
+			fi
+			hyprlock --config "$SCRIPT_DIR/../hyprlock.conf"
+		else
+			notify-send "Bloqueio de tela" "Instale o pacote hyprlock para usar esta opção."
 		fi
         ;;
     $suspend)
