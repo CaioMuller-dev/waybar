@@ -2,6 +2,8 @@
 
 Configuração de Waybar para Hyprland no Arch Linux, com scripts auxiliares, tema de Rofi e configuração do Hyprlock usados pelo menu de energia.
 
+![Waybar Kalice](WaybarPrint.png)
+
 ## Módulos
 
 - **Esquerda:** workspaces do Hyprland, uptime, memória e CPU. Clicar em memória ou CPU abre `htop` no Kitty.
