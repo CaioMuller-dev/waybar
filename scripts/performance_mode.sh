@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 # Módulo waybar: mostra o governor atual e alterna ao clicar (on-click chama toggle)
 current=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

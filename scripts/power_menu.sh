@@ -2,13 +2,10 @@
 
 ## Author : Aditya Shakya (adi1090x)
 ## Github : @adi1090x
-#
-## Rofi   : Power Menu
-#
-## Available Styles
-#
-## style-1   style-2   style-3   style-4   style-5
-## style-6   style-7   style-8   style-9   style-10
+
+## Personalizações: Caio Muller (kalice)
+## Github: @CaioMuller-dev
+
 
 # Resolve the bundled theme relative to this script so the Waybar folder is portable.
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

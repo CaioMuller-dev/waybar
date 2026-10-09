@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 set -euo pipefail
 
 SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"

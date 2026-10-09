@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 # Imprime ícone conforme nível do sinal wifi + %
 iface=$(nmcli -t -f DEVICE,TYPE,STATE device | awk -F: '$2=="wifi" && $3=="connected" {print $1; exit}')
 if [ -z "$iface" ]; then

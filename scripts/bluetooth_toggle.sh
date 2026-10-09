@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 # Alterna o rádio Bluetooth pelo BlueZ. O clique direito abre o Blueman.
 if ! command -v bluetoothctl >/dev/null 2>&1; then
     notify-send "Bluetooth" "O comando bluetoothctl não está instalado."

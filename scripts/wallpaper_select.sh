@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"

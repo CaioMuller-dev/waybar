@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+## Author: Caio Muller (kalice)
+## GitHub: @CaioMuller-dev
+
 # Define o governor de CPU (performance | powersave) em todos os núcleos
 mode="$1"
 case "$mode" in
